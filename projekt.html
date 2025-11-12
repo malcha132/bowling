@@ -1,0 +1,704 @@
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spare Time Bowling | 1. Česká Juniorská Liga</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. Základní nastavení a reset --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* ZMĚNA: Používáme font Poppins */
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f9ff; /* Velmi světle modrá, téměř bílá */
+            color: #111827; /* Tmavě šedá pro text */
+            -webkit-font-smoothing: antialiased;
+            scroll-behavior: smooth;
+        }
+
+        /* [Zde následuje zbytek CSS s neměnnými barevnými hex kódy...] */
+
+        /* --- 2. Utility třídy a Layout --- */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .text-center { text-align: center; }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+        /* --- 3. Hlavička a Navigace --- */
+        .header {
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e3a8a; /* Tmavě modrá */
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.5rem;
+            color: #00bcd4; /* Tyrkysová */
+        }
+
+        /* Desktop Navigace */
+        .desktop-nav {
+            display: none;
+            gap: 2rem;
+        }
+        .desktop-nav a {
+            color: #4b5563;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .desktop-nav a:hover {
+            color: #00bcd4; /* Tyrkysová */
+        }
+        
+        /* Tlačítko pro Mobilní Menu */
+        .menu-button {
+            display: block; 
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: #4b5563;
+            transition: color 0.3s;
+        }
+        .menu-button:hover {
+            color: #00bcd4; /* Tyrkysová */
+        }
+        .menu-button svg {
+             width: 1.5rem;
+             height: 1.5rem;
+        }
+
+        /* --- 4. Mobilní Menu Overlay --- */
+        .mobile-nav-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 256px; 
+            background-color: #1e3a8a; /* Tmavě modrá */
+            color: white;
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+            z-index: 40;
+            padding: 1.5rem;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-nav-menu.open {
+            transform: translateX(0);
+        }
+        
+        .mobile-nav-menu nav {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .mobile-nav-menu a {
+            font-size: 1.125rem;
+            font-weight: 500;
+            text-decoration: none;
+            color: white;
+            transition: color 0.3s;
+        }
+
+        .mobile-nav-menu a:hover {
+            color: #00bcd4; /* Tyrkysová */
+        }
+
+        .mobile-nav-menu .close-button {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .mobile-nav-menu .close-button button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* --- 5. Hero Sekce --- */
+        .hero {
+            padding: 5rem 0 7rem 0; 
+            background-color: #f9fafb; /* Světle šedá */
+            border-bottom: 4px solid rgba(0, 188, 212, 0.5);
+        }
+
+        .hero h1 {
+            font-size: 3rem; 
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        .hero h1 span {
+            color: #00bcd4; /* Tyrkysová */
+        }
+        
+        .hero .subtitle {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #00bcd4; /* Tyrkysová */
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .hero .description {
+            font-size: 1.125rem; 
+            color: #4b5563;
+            margin-bottom: 2.5rem;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+        
+        .register-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            border: none;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            color: white;
+            background-color: #00bcd4; /* Tyrkysová */
+            transition: all 0.3s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .register-button:hover {
+            background-color: #1e3a8a; /* Tmavě modrá */
+            transform: scale(1.05);
+        }
+
+        .hero .note {
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* --- 6. Sekce obsahu --- */
+        .section-padding {
+            padding: 4rem 0 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 3.5rem;
+            color: #1f2937;
+        }
+
+        /* Karty tréninkových základen */
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .location-card {
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #00bcd4; /* Tyrkysová */
+            transition: all 0.5s;
+            background-color: white;
+        }
+        
+        .location-card:hover {
+            box-shadow: 0 15px 25px -5px rgba(0, 188, 212, 0.3);
+        }
+
+        .location-card .icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 9999px;
+            background-color: rgba(0, 188, 212, 0.1);
+            color: #00bcd4; /* Tyrkysová */
+            margin: 0 auto 1.5rem auto;
+            transition: all 0.3s;
+        }
+
+        .location-card:hover .icon-wrapper {
+            background-color: #00bcd4; /* Tyrkysová */
+            color: white;
+        }
+
+        .location-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            color: #1f2937;
+        }
+
+        .location-card p {
+            color: #4b5563;
+            text-align: center;
+        }
+
+        .location-card a {
+            display: block;
+            margin-top: 1.25rem;
+            text-align: center;
+            color: #00bcd4; /* Tyrkysová */
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .location-card a:hover {
+            color: #1e3a8a; /* Tmavě modrá */
+        }
+
+        /* Sekce Galerie */
+        .gallery-item {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transform: scale(1);
+            transition: transform 0.3s;
+            background-color: white;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 12rem; 
+            object-fit: cover;
+        }
+        .gallery-item .caption {
+            padding: 1rem;
+            background-color: white;
+        }
+        .gallery-item .caption p {
+            font-weight: 600;
+            color: #1e3a8a; /* Tmavě modrá */
+        }
+
+        /* Sekce Liga a Výsledky */
+        .results-section {
+            border-top: 1px solid #e5e7eb;
+        }
+        .results-section .trophy-icon {
+            color: #f59e0b; /* Zlatá */
+            margin-bottom: 1.5rem;
+            width: 2.25rem; 
+            height: 2.25rem; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .results-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 9999px;
+            color: white;
+            background-color: #f59e0b; /* Zlatá */
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .results-button:hover {
+            background-color: #d97706; /* tmavší žlutá */
+        }
+        
+        /* Sekce CTA (Kontakt) */
+        .cta-section {
+            background-color: rgba(30, 58, 138, 0.95); /* Tmavě modrá s transparentností */
+            color: white;
+        }
+        .cta-section h2 {
+            font-size: 1.875rem; 
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .cta-section p {
+            font-size: 1.125rem; 
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            border: 1px solid white;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: #1e3a8a; /* Tmavě modrá */
+            background-color: white;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .cta-button:hover {
+            background-color: #f3f4f6;
+            transform: scale(1.05);
+        }
+
+        /* --- 7. Patička --- */
+        .footer {
+            background-color: #1f2937;
+            padding: 2.5rem 0;
+            color: #9ca3af;
+        }
+        .footer p {
+            font-size: 0.875rem;
+        }
+        .footer-links {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center; 
+            gap: 1rem;
+        }
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #00bcd4; /* Tyrkysová */
+        }
+
+        /* --- 8. Modal (Místo alert) --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(17, 24, 39, 0.75);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 24rem;
+            width: 100%;
+        }
+        .modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #1e3a8a; /* Tmavě modrá */
+        }
+        .modal-content p {
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        .modal-close-button {
+            width: 100%;
+            background-color: #00bcd4; /* Tyrkysová */
+            color: white;
+            padding: 0.5rem 0;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-close-button:hover {
+            background-color: #1e3a8a; /* Tmavě modrá */
+        }
+
+
+        /* --- 9. Media Queries pro Responzivitu --- */
+        @media (min-width: 768px) { /* Tablet a Desktop */
+            .menu-button {
+                display: none; 
+            }
+            .desktop-nav {
+                display: flex; 
+            }
+            .hero h1 {
+                font-size: 4.5rem; 
+            }
+            .location-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) { /* Větší Desktop */
+             .gallery-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="custom-modal" class="modal-overlay" onclick="document.getElementById('custom-modal').style.display='none';">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 id="modal-title">Zpráva</h3>
+            <p id="modal-message">Děkujeme za váš zájem!</p>
+            <button onclick="document.getElementById('custom-modal').style.display='none'" class="modal-close-button">
+                Zavřít
+            </button>
+        </div>
+    </div>
+
+    <div id="mobile-menu" role="dialog" aria-modal="true" class="mobile-nav-menu">
+        <div class="close-button">
+            <button onclick="toggleMobileMenu()" aria-label="Zavřít menu" class="text-white hover:text-primary-aqua focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <nav>
+            <a href="#rezervace" class="nav-link" onclick="toggleMobileMenu()">Tréninky</a>
+            <a href="#vysledky" class="nav-link" onclick="toggleMobileMenu()">Liga & Výsledky</a>
+            <a href="#akce" class="nav-link" onclick="toggleMobileMenu()">Akce & Turnaje</a>
+            <a href="#galerie" class="nav-link" onclick="toggleMobileMenu()">Galerie</a>
+            <a href="#kontakt" class="nav-link" onclick="toggleMobileMenu()">Kontakt</a>
+        </nav>
+    </div>
+
+    <header class="header shadow-lg">
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10 10 10 0 0 1-10-10 10 10 0 0 1 10-10z"/><circle cx="10" cy="10" r="1"/><circle cx="14" cy="14" r="1"/></svg>
+                SPARE TIME BOWLING
+            </a>
+            
+            <nav class="desktop-nav">
+                <a href="#rezervace" class="nav-link">Tréninky</a>
+                <a href="#vysledky" class="nav-link">Liga & výsledky</a>
+                <a href="#akce" class="nav-link">Akce & turnaje</a>
+                <a href="#galerie" class="nav-link">Galerie</a>
+                <a href="#kontakt" class="nav-link">Kontakt</a>
+            </nav>
+            
+            <button onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu" class="menu-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero text-center">
+        <div class="container">
+            <p class="subtitle">
+                Klub českého bowlingu
+            </p>
+            <h1>
+                <span>Spare Time</span> Bowling
+            </h1>
+            <p class="description">
+                Vítejte na domovské stránce Spare Time Bowling. Zde najdete informace o trénincích, výsledcích 1. juniorské ligy a plánovaných akcích.
+            </p>
+            <button id="register-button" class="register-button">
+                Registrace na trénink
+            </button>
+            <p class="note">Trénujeme v Radavě, Žižkově a Proseku.</p>
+        </div>
+    </section>
+
+    <section id="rezervace" class="section-padding" style="background-color: white;">
+        <div class="container">
+            <h2 class="section-title">Naše tréninkové základny</h2>
+
+            <div class="location-grid">
+                
+                <div class="location-card">
+                    <div class="icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <h3>Bowling Radava</h3>
+                    <p>Hlavní tréninkové centrum s moderními drahami. Ideální pro individuální přípravu a klubové srazy.</p>
+                    <a href="#">Zjistit rozpis &rarr;</a>
+                </div>
+
+                <div class="location-card">
+                    <div class="icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <h3>xBowling Žižkov</h3>
+                    <p>Využíváme pro středeční bloky a trénink na sportovních modelech. Skvělé zázemí.</p>
+                    <a href="#">Zjistit rozpis &rarr;</a>
+                </div>
+
+                <div class="location-card">
+                    <div class="icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <h3>xBowling Prosek</h3>
+                    <p>Vhodné pro večerní tréninky a přípravu na ligové zápasy v klidnějším prostředí.</p>
+                    <a href="#">Zjistit rozpis &rarr;</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="galerie" class="section-padding" style="background-color: #f3f4f6;">
+        <div class="container">
+            <h2 class="section-title">Náš tým</h2>
+
+            <div class="gallery-grid">
+                
+                <div class="gallery-item">
+                    <img src="https://placehold.co/600x400/00bcd4/ffffff?text=River+Club" alt="Tým Spare Time Bowling">
+                    <div class="caption">
+                        <p>Boj o extraligu</p>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=Strike+Time" alt="Bowling Radava trénink">
+                    <div class="caption">
+                        <p>Strikeři v akci</p>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="https://placehold.co/600x400/f59e0b/ffffff?text=Spare + Time" alt="Trénink v xBowling Žižkov">
+                    <div class="caption">
+                        <p>Nejmladší tým</p>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="https://placehold.co/600x400/00bcd4/ffffff?text=Fotogalerie" alt="Strike v akci">
+                    <div class="caption">
+                        <p>Týmy v akci</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="vysledky" class="section-padding results-section text-center">
+        <div class="container">
+             <div class="trophy-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1h-1a1 1 0 0 1-1-1v-2.34L3.68 9.88A4 4 0 0 1 6 5h12a4 4 0 0 1 2.32 4.88L15 14.66z"/></svg>
+            </div>
+            <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem;">1. Česká juniorská liga</h2>
+            <p style="font-size: 1.125rem; color: #4b5563; margin-bottom: 2rem;">Sledujte, jak se daří našim juniorům v lize. Výsledky se aktualizují ihned po každém kole.</p>
+            <a href="https://www.bowlingovaliga.cz/ligy/ceska-juniorska-1-liga-2025" class="results-button">
+                Přejít na live výsledky
+            </a>
+        </div>
+    </section>
+
+    <section id="kontakt" class="section-padding cta-section text-center">
+        <div class="container">
+            <h2>Máte dotaz k tréninku nebo náboru?</h2>
+            <p>Kontaktujte nás pro informace o náboru juniorů a detailech tréninků v Radavě, Žižkově a Proseku.</p>
+            <a href="mailto:malkoval13@gmail.com" class="cta-button">
+                Napsat klubu e-mail
+            </a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2025 SPARE TIME BOWLING. Všechna práva vyhrazena.</p>
+            <div class="footer-links">
+                <a href="#">Pravidla klubu</a>
+                <a href="#">Ochrana osobních údajů</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Interaktivita pomocí JavaScriptu ---
+
+        // 1. Odkazy pro plynulé scrollování (Smooth Scrolling)
+        document.querySelectorAll('.nav-link, #register-button').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Pokud kliknutí pochází z tlačítka Registrace, ukaž modal
+                if (this.id === 'register-button') {
+                    e.preventDefault();
+                    showCustomModal("Registrace Zahájena", "Děkujeme za váš zájem! Brzy vás budeme kontaktovat s detaily o tréninkového rozvrhu.");
+                    return;
+                }
+
+                // Ostatní odkazy scrollují
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // 2. Toggler pro Mobilní Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const menuButton = document.querySelector('button[aria-controls="mobile-menu"]'); 
+
+            const isOpen = menu.classList.toggle('open');
+            
+            // Zamezit scrollování pozadí při otevřeném menu
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+            
+            // Aktualizace A11y atributu aria-expanded
+            if (menuButton) {
+                menuButton.setAttribute('aria-expanded', isOpen);
+            }
+        }
+
+        // 3. Vlastní Modal (Místo alert())
+        function showCustomModal(title, message) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('custom-modal').style.display = 'flex'; // Zobrazit modal
+        }
+    </script>
+
+</body>
+</html>
