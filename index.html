@@ -1,704 +1,1822 @@
+
+<!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spare Time Bowling | 1. Česká Juniorská Liga</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spare Time Prague · Bowling Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style>
-        /* --- 1. Základní nastavení a reset --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  :root {
+    --bg: #0d0d0f;
+    --bg2: #141416;
+    --bg3: #1c1c1f;
+    --bg4: #252528;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --gold: #f0a500;
+    --gold2: #ffd166;
+    --teal: #2ec4b6;
+    --teal2: #7ee8e1;
+    --text: #f0ede8;
+    --muted: #8b8985;
+    --muted2: #6a6865;
+    --red: #e05252;
+    --green: #4caf81;
+    --pin: #f5f0e8;
+  }
 
-        body {
-            /* ZMĚNA: Používáme font Poppins */
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f9ff; /* Velmi světle modrá, téměř bílá */
-            color: #111827; /* Tmavě šedá pro text */
-            -webkit-font-smoothing: antialiased;
-            scroll-behavior: smooth;
-        }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-        /* [Zde následuje zbytek CSS s neměnnými barevnými hex kódy...] */
+  /* lane texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 78px,
+      rgba(255,255,255,0.012) 78px, rgba(255,255,255,0.012) 80px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        /* --- 2. Utility třídy a Layout --- */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        .text-center { text-align: center; }
-        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+  /* ─── HEADER ─── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,13,15,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
 
-        /* --- 3. Hlavička a Navigace --- */
-        .header {
-            background-color: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .logo-icon::before {
+    content: '🎳';
+    font-size: 18px;
+    filter: grayscale(1) brightness(0);
+  }
+  .logo-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .logo-name span { color: var(--gold); }
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #1e3a8a; /* Tmavě modrá */
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-        }
-        .logo .icon {
-            width: 1.5rem;
-            height: 1.5rem;
-            margin-right: 0.5rem;
-            color: #00bcd4; /* Tyrkysová */
-        }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-        /* Desktop Navigace */
-        .desktop-nav {
-            display: none;
-            gap: 2rem;
-        }
-        .desktop-nav a {
-            color: #4b5563;
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .desktop-nav a:hover {
-            color: #00bcd4; /* Tyrkysová */
-        }
-        
-        /* Tlačítko pro Mobilní Menu */
-        .menu-button {
-            display: block; 
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            color: #4b5563;
-            transition: color 0.3s;
-        }
-        .menu-button:hover {
-            color: #00bcd4; /* Tyrkysová */
-        }
-        .menu-button svg {
-             width: 1.5rem;
-             height: 1.5rem;
-        }
+  .avatar-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, #e07800 100%);
+    border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1a1000;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .avatar-btn:hover { transform: scale(1.08); }
 
-        /* --- 4. Mobilní Menu Overlay --- */
-        .mobile-nav-menu {
-            position: fixed;
-            top: 0;
-            right: 0;
-            height: 100%;
-            width: 256px; 
-            background-color: #1e3a8a; /* Tmavě modrá */
-            color: white;
-            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
-            z-index: 40;
-            padding: 1.5rem;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-        }
+  .notif-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+    font-size: 16px;
+  }
+  .notif-btn:hover { background: var(--bg4); }
+  .notif-dot {
+    position: absolute;
+    top: 5px; right: 5px;
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
 
-        .mobile-nav-menu.open {
-            transform: translateX(0);
-        }
-        
-        .mobile-nav-menu nav {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
+  /* ─── NAV TABS ─── */
+  nav.tabs {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+  }
 
-        .mobile-nav-menu a {
-            font-size: 1.125rem;
-            font-weight: 500;
-            text-decoration: none;
-            color: white;
-            transition: color 0.3s;
-        }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0 20px;
+    height: 48px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .tab-btn.active { color: var(--gold); }
+  .tab-btn.active::after { opacity: 1; }
+  .tab-btn:hover:not(.active) { color: var(--text); }
 
-        .mobile-nav-menu a:hover {
-            color: #00bcd4; /* Tyrkysová */
-        }
+  .tab-badge {
+    background: var(--gold);
+    color: #1a1000;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 1px 6px;
+    min-width: 18px;
+    text-align: center;
+  }
 
-        .mobile-nav-menu .close-button {
-            text-align: right;
-            margin-bottom: 1rem;
-        }
+  /* ─── LAYOUT ─── */
+  .page { display: none; }
+  .page.active { display: block; }
 
-        .mobile-nav-menu .close-button button {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-        
-        /* --- 5. Hero Sekce --- */
-        .hero {
-            padding: 5rem 0 7rem 0; 
-            background-color: #f9fafb; /* Světle šedá */
-            border-bottom: 4px solid rgba(0, 188, 212, 0.5);
-        }
+  .layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .layout.full { grid-template-columns: 1fr; }
 
-        .hero h1 {
-            font-size: 3rem; 
-            font-weight: 900;
-            letter-spacing: -0.05em;
-            margin-bottom: 1.5rem;
-            color: #1f2937;
-        }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar-col { display: none; }
+  }
 
-        .hero h1 span {
-            color: #00bcd4; /* Tyrkysová */
-        }
-        
-        .hero .subtitle {
-            font-size: 1.25rem; 
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #00bcd4; /* Tyrkysová */
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .card + .card { margin-top: 1rem; }
 
-        .hero .description {
-            font-size: 1.125rem; 
-            color: #4b5563;
-            margin-bottom: 2.5rem;
-            max-width: 640px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0.9;
-        }
-        
-        .register-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 2.5rem;
-            border: none;
-            font-size: 1.125rem;
-            font-weight: 700;
-            border-radius: 9999px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            color: white;
-            background-color: #00bcd4; /* Tyrkysová */
-            transition: all 0.3s;
-            text-decoration: none;
-            cursor: pointer;
-        }
+  .card-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
 
-        .register-button:hover {
-            background-color: #1e3a8a; /* Tmavě modrá */
-            transform: scale(1.05);
-        }
+  /* ─── POST COMPOSER ─── */
+  .composer {
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+  }
+  .composer-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, #e07800 100%);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    color: #1a1000;
+    font-size: 14px;
+  }
+  .composer-body { flex: 1; }
+  .composer-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 22px;
+    padding: 9px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: text;
+  }
+  .composer-input:focus {
+    border-color: var(--gold);
+    background: var(--bg4);
+  }
+  .composer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .composer-tools {
+    display: flex;
+    gap: 4px;
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .icon-btn:hover { background: var(--bg3); color: var(--text); }
 
-        .hero .note {
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
+  .btn-primary {
+    background: var(--gold);
+    color: #1a1000;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--gold2); }
+  .btn-primary:active { transform: scale(0.97); }
 
-        /* --- 6. Sekce obsahu --- */
-        .section-padding {
-            padding: 4rem 0 5rem 0;
-        }
-        
-        .section-title {
-            font-size: 2.25rem;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 3.5rem;
-            color: #1f2937;
-        }
+  .btn-ghost {
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); }
 
-        /* Karty tréninkových základen */
-        .location-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
+  /* ─── FEED POST ─── */
+  .post {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    animation: fadeUp 0.35s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-        .location-card {
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-top: 4px solid #00bcd4; /* Tyrkysová */
-            transition: all 0.5s;
-            background-color: white;
-        }
-        
-        .location-card:hover {
-            box-shadow: 0 15px 25px -5px rgba(0, 188, 212, 0.3);
-        }
+  .post-header {
+    padding: 1rem 1.25rem 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .post-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #1a1000;
+  }
+  .post-meta { flex: 1; }
+  .post-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .post-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-gold { background: rgba(240,165,0,0.18); color: var(--gold2); }
+  .badge-teal { background: rgba(46,196,182,0.15); color: var(--teal2); }
+  .badge-red  { background: rgba(224,82,82,0.15); color: #f08080; }
 
-        .location-card .icon-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 4rem;
-            height: 4rem;
-            border-radius: 9999px;
-            background-color: rgba(0, 188, 212, 0.1);
-            color: #00bcd4; /* Tyrkysová */
-            margin: 0 auto 1.5rem auto;
-            transition: all 0.3s;
-        }
+  .post-time { font-size: 12px; color: var(--muted2); margin-top: 2px; }
 
-        .location-card:hover .icon-wrapper {
-            background-color: #00bcd4; /* Tyrkysová */
-            color: white;
-        }
+  .post-more {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: background 0.15s;
+  }
+  .post-more:hover { background: var(--bg3); }
 
-        .location-card h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 0.75rem;
-            color: #1f2937;
-        }
+  .post-body { padding: 0 1.25rem 0.75rem; }
+  .post-text { font-size: 15px; color: var(--text); line-height: 1.6; }
 
-        .location-card p {
-            color: #4b5563;
-            text-align: center;
-        }
+  /* score card inside post */
+  .score-card {
+    margin-top: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .score-team {
+    text-align: center;
+    flex: 1;
+  }
+  .score-name {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .score-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--text);
+  }
+  .score-num.win { color: var(--gold); }
+  .score-vs {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--muted2);
+    padding: 0 6px;
+  }
+  .score-label {
+    font-size: 11px;
+    color: var(--muted2);
+    margin-top: 4px;
+  }
 
-        .location-card a {
-            display: block;
-            margin-top: 1.25rem;
-            text-align: center;
-            color: #00bcd4; /* Tyrkysová */
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .location-card a:hover {
-            color: #1e3a8a; /* Tmavě modrá */
-        }
+  /* image placeholder */
+  .post-image {
+    width: 100%;
+    height: 200px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    color: var(--muted2);
+    font-size: 13px;
+    margin: 0.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .post-image::before {
+    content: '📸';
+    font-size: 32px;
+    position: absolute;
+    opacity: 0.25;
+  }
+  .post-image-label {
+    position: relative;
+    z-index: 1;
+    margin-top: 44px;
+  }
 
-        /* Sekce Galerie */
-        .gallery-item {
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-            transform: scale(1);
-            transition: transform 0.3s;
-            background-color: white;
-        }
-        .gallery-item:hover {
-            transform: scale(1.02);
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 12rem; 
-            object-fit: cover;
-        }
-        .gallery-item .caption {
-            padding: 1rem;
-            background-color: white;
-        }
-        .gallery-item .caption p {
-            font-weight: 600;
-            color: #1e3a8a; /* Tmavě modrá */
-        }
+  /* highlights strip */
+  .pin-strip {
+    background: linear-gradient(135deg, rgba(240,165,0,0.12), rgba(46,196,182,0.08));
+    border: 1px solid rgba(240,165,0,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .pin-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pin-stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .pin-stat-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 
-        /* Sekce Liga a Výsledky */
-        .results-section {
-            border-top: 1px solid #e5e7eb;
-        }
-        .results-section .trophy-icon {
-            color: #f59e0b; /* Zlatá */
-            margin-bottom: 1.5rem;
-            width: 2.25rem; 
-            height: 2.25rem; 
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .results-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 9999px;
-            color: white;
-            background-color: #f59e0b; /* Zlatá */
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        .results-button:hover {
-            background-color: #d97706; /* tmavší žlutá */
-        }
-        
-        /* Sekce CTA (Kontakt) */
-        .cta-section {
-            background-color: rgba(30, 58, 138, 0.95); /* Tmavě modrá s transparentností */
-            color: white;
-        }
-        .cta-section h2 {
-            font-size: 1.875rem; 
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        .cta-section p {
-            font-size: 1.125rem; 
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        .cta-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 2rem;
-            border: 1px solid white;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 9999px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            color: #1e3a8a; /* Tmavě modrá */
-            background-color: white;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        .cta-button:hover {
-            background-color: #f3f4f6;
-            transform: scale(1.05);
-        }
+  .post-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .reaction-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .reaction-btn:hover { background: var(--bg3); color: var(--text); }
+  .reaction-btn.liked { color: var(--gold); }
+  .reaction-btn.liked .reaction-icon { filter: none; }
+  .reaction-icon { font-size: 15px; }
+  .spacer { flex: 1; }
 
-        /* --- 7. Patička --- */
-        .footer {
-            background-color: #1f2937;
-            padding: 2.5rem 0;
-            color: #9ca3af;
-        }
-        .footer p {
-            font-size: 0.875rem;
-        }
-        .footer-links {
-            margin-top: 1rem;
-            display: flex;
-            justify-content: center; 
-            gap: 1rem;
-        }
-        .footer-links a {
-            color: #9ca3af;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .footer-links a:hover {
-            color: #00bcd4; /* Tyrkysová */
-        }
+  /* ─── COMMENTS ─── */
+  .comments-section {
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    display: none;
+  }
+  .comments-section.open { display: block; }
+  .comment {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.25s ease;
+  }
+  .comment-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: #1a1000;
+  }
+  .comment-bubble {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 8px 12px;
+    flex: 1;
+  }
+  .comment-author { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .comment-text  { font-size: 13px; color: var(--muted); }
+  .comment-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 6px;
+  }
+  .comment-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .comment-input:focus { border-color: var(--gold); }
+  .comment-submit {
+    background: var(--gold);
+    color: #1a1000;
+    border: none;
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  .comment-submit:hover { background: var(--gold2); }
+  .comment-submit:active { transform: scale(0.92); }
 
-        /* --- 8. Modal (Místo alert) --- */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(17, 24, 39, 0.75);
-            z-index: 50;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-width: 24rem;
-            width: 100%;
-        }
-        .modal-content h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #1e3a8a; /* Tmavě modrá */
-        }
-        .modal-content p {
-            color: #4b5563;
-            margin-bottom: 1rem;
-        }
-        .modal-close-button {
-            width: 100%;
-            background-color: #00bcd4; /* Tyrkysová */
-            color: white;
-            padding: 0.5rem 0;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-        .modal-close-button:hover {
-            background-color: #1e3a8a; /* Tmavě modrá */
-        }
+  /* ─── LEADERBOARD ─── */
+  .leaderboard { padding: 0; }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 1.25rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row:hover { background: var(--bg3); }
 
+  .lb-rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    min-width: 28px;
+    text-align: center;
+    color: var(--muted2);
+  }
+  .lb-rank.top1 { color: var(--gold); }
+  .lb-rank.top2 { color: #c0c0c0; }
+  .lb-rank.top3 { color: #cd7f32; }
 
-        /* --- 9. Media Queries pro Responzivitu --- */
-        @media (min-width: 768px) { /* Tablet a Desktop */
-            .menu-button {
-                display: none; 
-            }
-            .desktop-nav {
-                display: flex; 
-            }
-            .hero h1 {
-                font-size: 4.5rem; 
-            }
-            .location-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        @media (min-width: 1024px) { /* Větší Desktop */
-             .gallery-grid {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1rem;
-            }
-        }
-    </style>
+  .lb-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1a1000;
+  }
+  .lb-info { flex: 1; }
+  .lb-name { font-weight: 600; font-size: 14px; color: var(--text); }
+  .lb-sub  { font-size: 12px; color: var(--muted2); }
+
+  .lb-bar-wrap {
+    width: 80px;
+    background: var(--bg4);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .lb-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
+    width: 0;
+  }
+
+  .lb-score {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--text);
+    min-width: 52px;
+    text-align: right;
+  }
+
+  /* ─── EVENTS ─── */
+  .event-row {
+    display: flex;
+    gap: 14px;
+    padding: 14px 1.25rem;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .event-row:last-child { border-bottom: none; }
+  .event-date-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    width: 48px;
+    text-align: center;
+    padding: 6px 4px;
+    flex-shrink: 0;
+  }
+  .event-day {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .event-mon {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .event-info { flex: 1; }
+  .event-title { font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 3px; }
+  .event-meta  { font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
+  .event-meta span { display: flex; align-items: center; gap: 4px; }
+  .event-going {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .going-avs { display: flex; }
+  .going-av {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--bg2);
+    margin-left: -6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    color: #1a1000;
+  }
+  .going-av:first-child { margin-left: 0; }
+  .going-count { font-size: 12px; color: var(--muted); }
+  .btn-event {
+    background: none;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-event:hover { background: rgba(240,165,0,0.12); }
+  .btn-event.joined {
+    background: rgba(240,165,0,0.15);
+    color: var(--gold2);
+  }
+
+  /* ─── MEMBERS PAGE ─── */
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  .member-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .member-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .member-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .member-card:hover::before { opacity: 1; }
+  .member-card.gold-stripe::before { background: var(--gold); }
+  .member-card.teal-stripe::before { background: var(--teal); }
+  .member-card.red-stripe::before  { background: var(--red); }
+
+  .m-avatar {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: #1a1000;
+    position: relative;
+  }
+  .m-crown {
+    position: absolute;
+    top: -10px; right: -4px;
+    font-size: 16px;
+  }
+  .m-name { font-weight: 600; font-size: 15px; color: var(--text); }
+  .m-role { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .m-stats {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+  .m-stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .m-stat-lbl { font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar-col { display: flex; flex-direction: column; gap: 1rem; }
+
+  .quick-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 1rem 1.25rem;
+  }
+  .qstat {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .qstat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .qstat-lbl { font-size: 11px; color: var(--muted); }
+
+  .mini-event {
+    padding: 10px 1.25rem;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .mini-event:last-child { border-bottom: none; }
+  .mini-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .mini-event-text { font-size: 13px; color: var(--text); }
+  .mini-event-date { font-size: 11px; color: var(--muted2); }
+
+  .online-list { padding: 0.75rem 1.25rem; }
+  .online-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+  }
+  .online-av {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #1a1000;
+    position: relative;
+  }
+  .online-av::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--bg2);
+  }
+  .online-name { font-size: 13px; color: var(--text); font-weight: 500; }
+  .online-status { font-size: 11px; color: var(--muted2); }
+
+  /* ─── PROFILE PAGE ─── */
+  .profile-hero {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .profile-cover {
+    height: 100px;
+    background: linear-gradient(135deg, #1a1200, #0d1a18, #0a0d18);
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 12px,
+      rgba(240,165,0,0.06) 12px, rgba(240,165,0,0.06) 14px
+    );
+  }
+  .profile-info {
+    padding: 0 1.5rem 1.25rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: -30px;
+    position: relative;
+  }
+  .profile-av {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 3px solid var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: #1a1000;
+    flex-shrink: 0;
+  }
+  .profile-details { flex: 1; padding-top: 36px; }
+  .profile-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .profile-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .profile-stats {
+    display: flex;
+    gap: 24px;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .pstat { text-align: center; }
+  .pstat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .pstat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* ─── SEARCH ─── */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 9px 14px;
+    margin-bottom: 1.25rem;
+  }
+  .search-bar input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+  }
+  .search-bar input::placeholder { color: var(--muted2); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    z-index: 999;
+    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* mobile nav */
+  @media (max-width: 600px) {
+    header { padding: 0 1rem; }
+    nav.tabs { padding: 0 0.5rem; overflow-x: auto; scrollbar-width: none; }
+    nav.tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 0 12px; font-size: 13px; }
+    .layout { padding: 1rem; }
+  }
+
+  /* scroll smoothing */
+  html { scroll-behavior: smooth; }
+
+  /* pin icon svg */
+  .pin-svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 3px; }
+</style>
 </head>
-<body class="antialiased">
+<body>
 
-    <div id="custom-modal" class="modal-overlay" onclick="document.getElementById('custom-modal').style.display='none';">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modal-title">Zpráva</h3>
-            <p id="modal-message">Děkujeme za váš zájem!</p>
-            <button onclick="document.getElementById('custom-modal').style.display='none'" class="modal-close-button">
-                Zavřít
-            </button>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">🎳</span>
+  <span id="toast-text"></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#" onclick="return false">
+    <div class="logo-icon"></div>
+    <div class="logo-name">Spare<span>Time</span> Prague</div>
+  </a>
+  <div class="header-actions">
+    <button class="notif-btn" onclick="showToast('🔔','Máš 3 nová oznámení')">
+      🔔
+      <span class="notif-dot"></span>
+    </button>
+    <div class="avatar-btn" onclick="switchTab('profil')">MN</div>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="feed" onclick="switchTab('feed')">
+    <span>Aktuality</span>
+    <span class="tab-badge">4</span>
+  </button>
+  <button class="tab-btn" data-tab="zebricek" onclick="switchTab('zebricek')">
+    <span>Žebříček</span>
+  </button>
+  <button class="tab-btn" data-tab="akce" onclick="switchTab('akce')">
+    <span>Akce</span>
+    <span class="tab-badge" style="background:var(--teal);color:#002c28;">3</span>
+  </button>
+  <button class="tab-btn" data-tab="clenove" onclick="switchTab('clenove')">
+    <span>Členové</span>
+  </button>
+  <button class="tab-btn" data-tab="profil" onclick="switchTab('profil')">
+    <span>Můj profil</span>
+  </button>
+</nav>
+
+<!-- ════════════ PAGE: FEED ════════════ -->
+<div id="page-feed" class="page active">
+  <div class="layout">
+    <!-- MAIN -->
+    <div class="main-col">
+
+      <!-- COMPOSER -->
+      <div class="composer">
+        <div class="composer-avatar">MN</div>
+        <div class="composer-body">
+          <textarea class="composer-input" id="composerText" rows="1"
+            placeholder="Sdílej výsledek, fotku nebo co se děje…"
+            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+          <div class="composer-actions">
+            <div class="composer-tools">
+              <button class="icon-btn" title="Foto" onclick="showToast('📸','Nahrání fotek – brzy k dispozici')">📸</button>
+              <button class="icon-btn" title="Výsledek" onclick="showToast('🎳','Zadání skóre – brzy k dispozici')">🎳</button>
+              <button class="icon-btn" title="Anketa" onclick="showToast('📊','Ankety – brzy k dispozici')">📊</button>
+            </div>
+            <button class="btn-primary" onclick="publishPost()">Zveřejnit</button>
+          </div>
         </div>
+      </div>
+
+      <!-- FEED -->
+      <div id="feedContainer">
+
+        <!-- POST 1 -->
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+            <div class="post-meta">
+              <div class="post-name">
+                Tomáš Kovář
+                <span class="post-badge badge-gold">Kapitán</span>
+              </div>
+              <div class="post-time">před 23 minutami · Lane 7</div>
+            </div>
+            <button class="post-more">···</button>
+          </div>
+          <div class="post-body">
+            <div class="post-text">Právě jsme dohráli finálový zápas ligové sezony. Výsledek mluví za vše 🔥</div>
+            <div class="score-card">
+              <div class="score-team">
+                <div class="score-name">Spare Time A</div>
+                <div class="score-num win">847</div>
+                <div class="score-label">Vítěz</div>
+              </div>
+              <div class="score-vs">vs</div>
+              <div class="score-team">
+                <div class="score-name">Strike Force</div>
+                <div class="score-num">791</div>
+                <div class="score-label">—</div>
+              </div>
+            </div>
+            <div class="pin-strip">
+              <div class="pin-stat">
+                <div class="pin-stat-val">247</div>
+                <div class="pin-stat-lbl">Nejlepší hra</div>
+              </div>
+              <div class="pin-stat">
+                <div class="pin-stat-val">4×</div>
+                <div class="pin-stat-lbl">Strike v řadě</div>
+              </div>
+              <div class="pin-stat">
+                <div class="pin-stat-val">189</div>
+                <div class="pin-stat-lbl">Průměr kola</div>
+              </div>
+            </div>
+          </div>
+          <div class="post-footer">
+            <button class="reaction-btn" onclick="toggleLike(this, 'p1')">
+              <span class="reaction-icon">🎳</span>
+              <span class="like-count">18</span>
+            </button>
+            <button class="reaction-btn" onclick="toggleComment('c1')">
+              <span class="reaction-icon">💬</span>
+              <span>5</span>
+            </button>
+            <div class="spacer"></div>
+            <button class="reaction-btn" onclick="showToast('📤','Link zkopírován!')">
+              <span class="reaction-icon">↗</span> Sdílet
+            </button>
+          </div>
+          <div class="comments-section" id="c1">
+            <div class="comment">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#2ec4b6,#0f6e56)">LP</div>
+              <div class="comment-bubble">
+                <div class="comment-author">Lucie Procházková</div>
+                <div class="comment-text">Tohle byl EPICKÝ zápas, sledovala jsem live 🔥</div>
+              </div>
+            </div>
+            <div class="comment">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#e05252,#71131f)">MH</div>
+              <div class="comment-bubble">
+                <div class="comment-author">Martin Horák</div>
+                <div class="comment-text">Ten 4× strike v 9. framu byl neskutečný, Tomáši 👏</div>
+              </div>
+            </div>
+            <div class="comment-input-row">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800);width:30px;height:30px;font-size:11px">MN</div>
+              <input class="comment-input" placeholder="Napiš komentář…" id="ci1" onkeydown="if(event.key==='Enter')sendComment('c1','ci1')">
+              <button class="comment-submit" onclick="sendComment('c1','ci1')">➤</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 2 -->
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:linear-gradient(135deg,#2ec4b6,#0f6e56)">LP</div>
+            <div class="post-meta">
+              <div class="post-name">
+                Lucie Procházková
+                <span class="post-badge badge-teal">Trenér</span>
+              </div>
+              <div class="post-time">před 2 hodinami</div>
+            </div>
+            <button class="post-more">···</button>
+          </div>
+          <div class="post-body">
+            <div class="post-text">Sobotní trénink byl parádní! Díky všem za soustředění – vidím velký pokrok hlavně v přístupu k náhradám. Příště se zaměříme na spare conversion přes 7–10 split 🎯</div>
+            <div class="post-image">
+              <span class="post-image-label">Foto z tréninku · Sobota 9:00</span>
+            </div>
+          </div>
+          <div class="post-footer">
+            <button class="reaction-btn" onclick="toggleLike(this,'p2')">
+              <span class="reaction-icon">🎳</span>
+              <span class="like-count">11</span>
+            </button>
+            <button class="reaction-btn" onclick="toggleComment('c2')">
+              <span class="reaction-icon">💬</span>
+              <span>3</span>
+            </button>
+            <div class="spacer"></div>
+            <button class="reaction-btn" onclick="showToast('📤','Link zkopírován!')">
+              <span class="reaction-icon">↗</span> Sdílet
+            </button>
+          </div>
+          <div class="comments-section" id="c2">
+            <div class="comment">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+              <div class="comment-bubble">
+                <div class="comment-author">Tomáš Kovář</div>
+                <div class="comment-text">7–10 je moje noční můra 😅 přijdu určitě!</div>
+              </div>
+            </div>
+            <div class="comment-input-row">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800);width:30px;height:30px;font-size:11px">MN</div>
+              <input class="comment-input" placeholder="Napiš komentář…" id="ci2" onkeydown="if(event.key==='Enter')sendComment('c2','ci2')">
+              <button class="comment-submit" onclick="sendComment('c2','ci2')">➤</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 3 -->
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:linear-gradient(135deg,#9b59b6,#6c3483)">JN</div>
+            <div class="post-meta">
+              <div class="post-name">Jana Novotná</div>
+              <div class="post-time">včera · 19:41</div>
+            </div>
+            <button class="post-more">···</button>
+          </div>
+          <div class="post-body">
+            <div class="post-text">Personal best! 🏆 Konečně jsem překonala svůj rekord a dala 198. Přitom jsem na to čekala celý rok 😭🎉</div>
+            <div class="pin-strip">
+              <div class="pin-stat">
+                <div class="pin-stat-val">198</div>
+                <div class="pin-stat-lbl">Nový rekord</div>
+              </div>
+              <div class="pin-stat">
+                <div class="pin-stat-val">+14</div>
+                <div class="pin-stat-lbl">Nad průměrem</div>
+              </div>
+            </div>
+          </div>
+          <div class="post-footer">
+            <button class="reaction-btn" onclick="toggleLike(this,'p3')">
+              <span class="reaction-icon">🎳</span>
+              <span class="like-count">24</span>
+            </button>
+            <button class="reaction-btn" onclick="toggleComment('c3')">
+              <span class="reaction-icon">💬</span>
+              <span>7</span>
+            </button>
+            <div class="spacer"></div>
+            <button class="reaction-btn" onclick="showToast('📤','Link zkopírován!')">
+              <span class="reaction-icon">↗</span> Sdílet
+            </button>
+          </div>
+          <div class="comments-section" id="c3">
+            <div class="comment">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#2ec4b6,#0f6e56)">LP</div>
+              <div class="comment-bubble">
+                <div class="comment-author">Lucie Procházková</div>
+                <div class="comment-text">JANA!!! 🎉🎉🎉 Věděla jsem, že na to máš!</div>
+              </div>
+            </div>
+            <div class="comment-input-row">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800);width:30px;height:30px;font-size:11px">MN</div>
+              <input class="comment-input" placeholder="Napiš komentář…" id="ci3" onkeydown="if(event.key==='Enter')sendComment('c3','ci3')">
+              <button class="comment-submit" onclick="sendComment('c3','ci3')">➤</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- POST 4 -->
+        <div class="post">
+          <div class="post-header">
+            <div class="post-avatar" style="background:linear-gradient(135deg,#e05252,#71131f)">MH</div>
+            <div class="post-meta">
+              <div class="post-name">Martin Horák <span class="post-badge badge-red">Nováček</span></div>
+              <div class="post-time">před 3 dny</div>
+            </div>
+            <button class="post-more">···</button>
+          </div>
+          <div class="post-body">
+            <div class="post-text">První officiální zápas za B tým! Byl jsem nervózní jak o život, ale nakonec to nedopadlo tak špatně – 142. Každý někde začínal, ne? 😄</div>
+          </div>
+          <div class="post-footer">
+            <button class="reaction-btn" onclick="toggleLike(this,'p4')">
+              <span class="reaction-icon">🎳</span>
+              <span class="like-count">31</span>
+            </button>
+            <button class="reaction-btn" onclick="toggleComment('c4')">
+              <span class="reaction-icon">💬</span>
+              <span>9</span>
+            </button>
+            <div class="spacer"></div>
+            <button class="reaction-btn" onclick="showToast('📤','Link zkopírován!')">
+              <span class="reaction-icon">↗</span> Sdílet
+            </button>
+          </div>
+          <div class="comments-section" id="c4">
+            <div class="comment">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+              <div class="comment-bubble">
+                <div class="comment-author">David Schiefner</div>
+                <div class="comment-text">Extraliga volá! 🤝</div>
+              </div>
+            </div>
+            <div class="comment-input-row">
+              <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800);width:30px;height:30px;font-size:11px">MN</div>
+              <input class="comment-input" placeholder="Napiš komentář…" id="ci4" onkeydown="if(event.key==='Enter')sendComment('c4','ci4')">
+              <button class="comment-submit" onclick="sendComment('c4','ci4')">➤</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /feedContainer -->
+    </div><!-- /main -->
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-col">
+      <!-- quick stats -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-title-dot"></span>Sezóna 2025/26</div>
+        </div>
+        <div class="quick-stats">
+          <div class="qstat">
+            <div class="qstat-val">23</div>
+            <div class="qstat-lbl">Zápasů</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val">16</div>
+            <div class="qstat-lbl">Výher</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val">189</div>
+            <div class="qstat-lbl">Průměr</div>
+          </div>
+          <div class="qstat">
+            <div class="qstat-val">2.</div>
+            <div class="qstat-lbl">Místo v lize</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- upcoming -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-title-dot"></span>Příští akce</div>
+          <button class="btn-ghost" style="font-size:12px;padding:4px 10px" onclick="switchTab('akce')">Vše</button>
+        </div>
+        <div class="mini-event">
+          <div class="mini-dot" style="background:var(--gold)"></div>
+          <div>
+            <div class="mini-event-text">Trénink – Radavaa</div>
+            <div class="mini-event-date">Út 26. 5. · 16:00</div>
+          </div>
+        </div>
+        <div class="mini-event">
+          <div class="mini-dot" style="background:var(--teal)"></div>
+          <div>
+            <div class="mini-event-text">Baráž extraliga</div>
+            <div class="mini-event-date">So 30. 5. · 10:00</div>
+          </div>
+        </div>
+        <div class="mini-event">
+          <div class="mini-dot" style="background:#9b59b6"></div>
+          <div>
+            <div class="mini-event-text">Klubový turnaj – letní edice</div>
+            <div class="mini-event-date">Út 23. 6. · 16:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- online -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-title-dot" style="background:var(--green)"></span>Právě online</div>
+        </div>
+        <div class="online-list">
+          <div class="online-item">
+            <div class="online-av" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+            <div>
+              <div class="online-name">Tomáš Kovář</div>
+              <div class="online-status">Prohlíží výsledky</div>
+            </div>
+          </div>
+          <div class="online-item">
+            <div class="online-av" style="background:linear-gradient(135deg,#2ec4b6,#0f6e56)">LP</div>
+            <div>
+              <div class="online-name">Lucie Procházková</div>
+              <div class="online-status">Aktivní</div>
+            </div>
+          </div>
+          <div class="online-item">
+            <div class="online-av" style="background:linear-gradient(135deg,#9b59b6,#6c3483)">JN</div>
+            <div>
+              <div class="online-name">Jana Novotná</div>
+              <div class="online-status">Před 5 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: ŽEBŘÍČEK ════════════ -->
+<div id="page-zebricek" class="page">
+  <div class="layout full" style="max-width:720px">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot"></span>Průměrové skóre · Sezóna 2025/26</div>
+        <div style="font-size:12px;color:var(--muted)">Top 10 hráčů</div>
+      </div>
+      <div class="leaderboard" id="lbList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: AKCE ════════════ -->
+<div id="page-akce" class="page">
+  <div class="layout full" style="max-width:720px">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot"></span>Nadcházející akce</div>
+        <button class="btn-primary" onclick="showToast('📅','Přidání akce – brzy k dispozici')">+ Přidat</button>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-day">29</div>
+          <div class="event-mon">kvě</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Čtvrteční trénink – technika sparu</div>
+          <div class="event-meta">
+            <span>🕡 18:30</span>
+            <span>📍 Pérovka, Praha 10</span>
+            <span>👤 Lucie Procházková</span>
+          </div>
+          <div class="event-going">
+            <div class="going-avs">
+              <div class="going-av" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+              <div class="going-av" style="background:linear-gradient(135deg,#9b59b6,#6c3483)">JN</div>
+              <div class="going-av" style="background:linear-gradient(135deg,#e05252,#71131f)">MH</div>
+            </div>
+            <div class="going-count">+5 dalších</div>
+            <button class="btn-event joined" onclick="toggleGoing(this)">✓ Jdu</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-day">31</div>
+          <div class="event-mon">kvě</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Ligový zápas – Spare Time A vs. Lucky Pins</div>
+          <div class="event-meta">
+            <span>🕙 10:00</span>
+            <span>📍 Bowl Arena, Praha 5</span>
+            <span>🏆 Liga – kolo 24</span>
+          </div>
+          <div class="event-going">
+            <div class="going-avs">
+              <div class="going-av" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+              <div class="going-av" style="background:linear-gradient(135deg,#2ec4b6,#0f6e56)">LP</div>
+            </div>
+            <div class="going-count">+3 dalších</div>
+            <button class="btn-event" onclick="toggleGoing(this)">Přihlásit se</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-day">14</div>
+          <div class="event-mon">čvn</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">🏆 Letní klubový turnaj – open kategorie</div>
+          <div class="event-meta">
+            <span>🕘 09:00 – 18:00</span>
+            <span>📍 Pérovka, Praha 10</span>
+            <span>💰 Vstupné 200 Kč</span>
+          </div>
+          <div class="event-going">
+            <div class="going-avs">
+              <div class="going-av" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+              <div class="going-av" style="background:linear-gradient(135deg,#2ec4b6,#0f6e56)">LP</div>
+              <div class="going-av" style="background:linear-gradient(135deg,#9b59b6,#6c3483)">JN</div>
+              <div class="going-av" style="background:linear-gradient(135deg,#e05252,#71131f)">MH</div>
+            </div>
+            <div class="going-count">+12 dalších</div>
+            <button class="btn-event" onclick="toggleGoing(this)">Přihlásit se</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-day">21</div>
+          <div class="event-mon">čvn</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Přátelský zápas – Praha vs. Brno</div>
+          <div class="event-meta">
+            <span>🕑 14:00</span>
+            <span>📍 Strike Centrum Brno</span>
+            <span>🚌 Autobus zajištěn</span>
+          </div>
+          <div class="event-going">
+            <div class="going-avs">
+              <div class="going-av" style="background:linear-gradient(135deg,#f0a500,#e07800)">TK</div>
+            </div>
+            <div class="going-count">+2 dalších</div>
+            <button class="btn-event" onclick="toggleGoing(this)">Přihlásit se</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: ČLENOVÉ ════════════ -->
+<div id="page-clenove" class="page">
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" placeholder="Hledat člena…" oninput="filterMembers(this.value)">
+    </div>
+    <div class="members-grid" id="membersGrid"></div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: PROFIL ════════════ -->
+<div id="page-profil" class="page">
+  <div style="max-width:760px;margin:0 auto;padding:2rem 1.5rem">
+    <div class="profile-hero">
+      <div class="profile-cover"></div>
+      <div class="profile-info">
+        <div class="profile-av" style="background:linear-gradient(135deg,#f0a500,#e07800)">MN</div>
+        <div class="profile-details">
+          <div class="profile-name">Marek Novák</div>
+          <div class="profile-sub">Spare Time Prague · Člen od 2022 · 🏅 Bronzová liga</div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn-primary" onclick="showToast('✏️','Úprava profilu – brzy k dispozici')">Upravit profil</button>
+            <button class="btn-ghost" onclick="showToast('⚙️','Nastavení – brzy k dispozici')">Nastavení</button>
+          </div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="pstat">
+          <div class="pstat-val">184</div>
+          <div class="pstat-lbl">Průměr</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-val">47</div>
+          <div class="pstat-lbl">Zápasů</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-val">221</div>
+          <div class="pstat-lbl">Rekord</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-val">68%</div>
+          <div class="pstat-lbl">Spare %</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-val">5.</div>
+          <div class="pstat-lbl">Místo</div>
+        </div>
+      </div>
     </div>
 
-    <div id="mobile-menu" role="dialog" aria-modal="true" class="mobile-nav-menu">
-        <div class="close-button">
-            <button onclick="toggleMobileMenu()" aria-label="Zavřít menu" class="text-white hover:text-primary-aqua focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
+    <!-- Progress chart -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot"></span>Průměr posledních 8 zápasů</div>
+      </div>
+      <div style="padding:1.25rem">
+        <div style="display:flex;gap:6px;align-items:flex-end;height:100px">
+          <div id="chartBars" style="display:flex;gap:6px;align-items:flex-end;height:100px;flex:1"></div>
         </div>
-        <nav>
-            <a href="#rezervace" class="nav-link" onclick="toggleMobileMenu()">Tréninky</a>
-            <a href="#vysledky" class="nav-link" onclick="toggleMobileMenu()">Liga & Výsledky</a>
-            <a href="#akce" class="nav-link" onclick="toggleMobileMenu()">Akce & Turnaje</a>
-            <a href="#galerie" class="nav-link" onclick="toggleMobileMenu()">Galerie</a>
-            <a href="#kontakt" class="nav-link" onclick="toggleMobileMenu()">Kontakt</a>
-        </nav>
+        <div style="display:flex;gap:6px;margin-top:6px" id="chartLabels"></div>
+      </div>
     </div>
 
-    <header class="header shadow-lg">
-        <div class="container header-content">
-            <a href="#" class="logo">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10 10 10 0 0 1-10-10 10 10 0 0 1 10-10z"/><circle cx="10" cy="10" r="1"/><circle cx="14" cy="14" r="1"/></svg>
-                SPARE TIME BOWLING
-            </a>
-            
-            <nav class="desktop-nav">
-                <a href="#rezervace" class="nav-link">Tréninky</a>
-                <a href="#vysledky" class="nav-link">Liga & výsledky</a>
-                <a href="#akce" class="nav-link">Akce & turnaje</a>
-                <a href="#galerie" class="nav-link">Galerie</a>
-                <a href="#kontakt" class="nav-link">Kontakt</a>
-            </nav>
-            
-            <button onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu" class="menu-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-            </button>
+    <!-- Achievements -->
+    <div class="card" style="margin-top:1rem">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot"></span>Odznaky</div>
+      </div>
+      <div style="padding:1rem 1.25rem;display:flex;flex-wrap:wrap;gap:12px">
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;text-align:center;min-width:90px">
+          <div style="font-size:28px;margin-bottom:4px">🎳</div>
+          <div style="font-size:11px;color:var(--gold);font-weight:600">Turkey</div>
+          <div style="font-size:10px;color:var(--muted2)">3× strike v řadě</div>
         </div>
-    </header>
-
-    <section class="hero text-center">
-        <div class="container">
-            <p class="subtitle">
-                Klub českého bowlingu
-            </p>
-            <h1>
-                <span>Spare Time</span> Bowling
-            </h1>
-            <p class="description">
-                Vítejte na domovské stránce Spare Time Bowling. Zde najdete informace o trénincích, výsledcích 1. juniorské ligy a plánovaných akcích.
-            </p>
-            <button id="register-button" class="register-button">
-                Registrace na trénink
-            </button>
-            <p class="note">Trénujeme v Radavě, Žižkově a Proseku.</p>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;text-align:center;min-width:90px">
+          <div style="font-size:28px;margin-bottom:4px">🏆</div>
+          <div style="font-size:11px;color:var(--gold);font-weight:600">Šampión</div>
+          <div style="font-size:10px;color:var(--muted2)">Výhra v turnaji</div>
         </div>
-    </section>
-
-    <section id="rezervace" class="section-padding" style="background-color: white;">
-        <div class="container">
-            <h2 class="section-title">Naše tréninkové základny</h2>
-
-            <div class="location-grid">
-                
-                <div class="location-card">
-                    <div class="icon-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    </div>
-                    <h3>Bowling Radava</h3>
-                    <p>Hlavní tréninkové centrum s moderními drahami. Ideální pro individuální přípravu a klubové srazy.</p>
-                    <a href="#">Zjistit rozpis &rarr;</a>
-                </div>
-
-                <div class="location-card">
-                    <div class="icon-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    </div>
-                    <h3>xBowling Žižkov</h3>
-                    <p>Využíváme pro středeční bloky a trénink na sportovních modelech. Skvělé zázemí.</p>
-                    <a href="#">Zjistit rozpis &rarr;</a>
-                </div>
-
-                <div class="location-card">
-                    <div class="icon-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    </div>
-                    <h3>xBowling Prosek</h3>
-                    <p>Vhodné pro večerní tréninky a přípravu na ligové zápasy v klidnějším prostředí.</p>
-                    <a href="#">Zjistit rozpis &rarr;</a>
-                </div>
-
-            </div>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;text-align:center;min-width:90px">
+          <div style="font-size:28px;margin-bottom:4px">📈</div>
+          <div style="font-size:11px;color:var(--gold);font-weight:600">Progres</div>
+          <div style="font-size:10px;color:var(--muted2)">+20 průměr za rok</div>
         </div>
-    </section>
-
-    <section id="galerie" class="section-padding" style="background-color: #f3f4f6;">
-        <div class="container">
-            <h2 class="section-title">Náš tým</h2>
-
-            <div class="gallery-grid">
-                
-                <div class="gallery-item">
-                    <img src="https://placehold.co/600x400/00bcd4/ffffff?text=River+Club" alt="Tým Spare Time Bowling">
-                    <div class="caption">
-                        <p>Boj o extraligu</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=Strike+Time" alt="Bowling Radava trénink">
-                    <div class="caption">
-                        <p>Strikeři v akci</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="https://placehold.co/600x400/f59e0b/ffffff?text=Spare + Time" alt="Trénink v xBowling Žižkov">
-                    <div class="caption">
-                        <p>Nejmladší tým</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="https://placehold.co/600x400/00bcd4/ffffff?text=Fotogalerie" alt="Strike v akci">
-                    <div class="caption">
-                        <p>Týmy v akci</p>
-                    </div>
-                </div>
-
-            </div>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;text-align:center;min-width:90px">
+          <div style="font-size:28px;margin-bottom:4px">🤝</div>
+          <div style="font-size:11px;color:var(--gold);font-weight:600">Týmový hráč</div>
+          <div style="font-size:10px;color:var(--muted2)">20+ zápasů v týmu</div>
         </div>
-    </section>
-
-    <section id="vysledky" class="section-padding results-section text-center">
-        <div class="container">
-             <div class="trophy-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1h-1a1 1 0 0 1-1-1v-2.34L3.68 9.88A4 4 0 0 1 6 5h12a4 4 0 0 1 2.32 4.88L15 14.66z"/></svg>
-            </div>
-            <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem;">1. Česká juniorská liga</h2>
-            <p style="font-size: 1.125rem; color: #4b5563; margin-bottom: 2rem;">Sledujte, jak se daří našim juniorům v lize. Výsledky se aktualizují ihned po každém kole.</p>
-            <a href="https://www.bowlingovaliga.cz/ligy/ceska-juniorska-1-liga-2025" class="results-button">
-                Přejít na live výsledky
-            </a>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;text-align:center;min-width:90px;opacity:0.4">
+          <div style="font-size:28px;margin-bottom:4px">⚡</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600">Perfect Game</div>
+          <div style="font-size:10px;color:var(--muted2)">Skóre 300</div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <section id="kontakt" class="section-padding cta-section text-center">
-        <div class="container">
-            <h2>Máte dotaz k tréninku nebo náboru?</h2>
-            <p>Kontaktujte nás pro informace o náboru juniorů a detailech tréninků v Radavě, Žižkově a Proseku.</p>
-            <a href="mailto:malkoval13@gmail.com" class="cta-button">
-                Napsat klubu e-mail
-            </a>
+<!-- ════════════ JS ════════════ -->
+<script>
+const PLAYERS = [
+  { initials:'TK', name:'Tomáš Kovář',    role:'Kapitán',  avg:214, games:23, color:'linear-gradient(135deg,#f0a500,#e07800)', stripe:'gold-stripe' },
+  { initials:'LP', name:'Lucie Procházková',role:'Trenér', avg:207, games:19, color:'linear-gradient(135deg,#2ec4b6,#0f6e56)', stripe:'teal-stripe' },
+  { initials:'JN', name:'Jana Novotná',   role:'Člen',     avg:198, games:21, color:'linear-gradient(135deg,#9b59b6,#6c3483)', stripe:'gold-stripe' },
+  { initials:'PV', name:'Pavel Vávra',    role:'Člen',     avg:193, games:17, color:'linear-gradient(135deg,#3498db,#1a5276)', stripe:'teal-stripe' },
+  { initials:'MN', name:'Marek Novák',    role:'Člen',     avg:184, games:22, color:'linear-gradient(135deg,#f0a500,#a06000)', stripe:'gold-stripe' },
+  { initials:'KS', name:'Klára Součková', role:'Člen',     avg:179, games:18, color:'linear-gradient(135deg,#e74c3c,#922b21)', stripe:'red-stripe'  },
+  { initials:'OM', name:'Ondřej Malý',    role:'Člen',     avg:173, games:14, color:'linear-gradient(135deg,#27ae60,#1a5e2a)', stripe:'teal-stripe' },
+  { initials:'AH', name:'Anna Horáčková', role:'Nováček',  avg:165, games:9,  color:'linear-gradient(135deg,#e67e22,#a04000)', stripe:'gold-stripe' },
+  { initials:'RK', name:'Radek Krejčí',   role:'Člen',     avg:161, games:12, color:'linear-gradient(135deg,#8e44ad,#4a235a)', stripe:'gold-stripe' },
+  { initials:'MH', name:'Martin Horák',   role:'Nováček',  avg:142, games:4,  color:'linear-gradient(135deg,#e05252,#71131f)', stripe:'red-stripe'  },
+];
+
+// leaderboard
+function buildLeaderboard() {
+  const el = document.getElementById('lbList');
+  const max = PLAYERS[0].avg;
+  PLAYERS.forEach((p, i) => {
+    const rankCls = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const pct = Math.round((p.avg / max) * 100);
+    el.innerHTML += `
+      <div class="lb-row">
+        <div class="lb-rank ${rankCls}">${i+1}</div>
+        <div class="lb-avatar" style="background:${p.color}">${p.initials}</div>
+        <div class="lb-info">
+          <div class="lb-name">${p.name}</div>
+          <div class="lb-sub">${p.role} · ${p.games} zápasů</div>
+          <div class="lb-bar-wrap" style="margin-top:6px">
+            <div class="lb-bar" data-pct="${pct}"></div>
+          </div>
         </div>
-    </section>
+        <div class="lb-score">${p.avg}</div>
+      </div>`;
+  });
+}
 
-    <footer class="footer">
-        <div class="container text-center">
-            <p>&copy; 2025 SPARE TIME BOWLING. Všechna práva vyhrazena.</p>
-            <div class="footer-links">
-                <a href="#">Pravidla klubu</a>
-                <a href="#">Ochrana osobních údajů</a>
-            </div>
+function animateBars() {
+  document.querySelectorAll('.lb-bar').forEach(b => {
+    setTimeout(() => b.style.width = b.dataset.pct + '%', 100);
+  });
+}
+
+// members
+function buildMembers(filter='') {
+  const el = document.getElementById('membersGrid');
+  const f = filter.toLowerCase();
+  const filtered = PLAYERS.filter(p => p.name.toLowerCase().includes(f) || p.role.toLowerCase().includes(f));
+  el.innerHTML = filtered.map((p, i) => `
+    <div class="member-card ${p.stripe}" onclick="showToast('👤','${p.name} – profil brzy k dispozici')">
+      <div class="m-avatar" style="background:${p.color}">
+        ${i===0?'<span class="m-crown">👑</span>':''}
+        ${p.initials}
+      </div>
+      <div class="m-name">${p.name}</div>
+      <div class="m-role">${p.role}</div>
+      <div class="m-stats">
+        <div>
+          <div class="m-stat-val">${p.avg}</div>
+          <div class="m-stat-lbl">Průměr</div>
         </div>
-    </footer>
+        <div>
+          <div class="m-stat-val">${p.games}</div>
+          <div class="m-stat-lbl">Zápasů</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
 
-    <script>
-        // --- Interaktivita pomocí JavaScriptu ---
+function filterMembers(v) { buildMembers(v); }
 
-        // 1. Odkazy pro plynulé scrollování (Smooth Scrolling)
-        document.querySelectorAll('.nav-link, #register-button').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                // Pokud kliknutí pochází z tlačítka Registrace, ukaž modal
-                if (this.id === 'register-button') {
-                    e.preventDefault();
-                    showCustomModal("Registrace Zahájena", "Děkujeme za váš zájem! Brzy vás budeme kontaktovat s detaily o tréninkového rozvrhu.");
-                    return;
-                }
+// profile chart
+function buildChart() {
+  const scores = [171, 179, 185, 168, 192, 184, 201, 184];
+  const labels = ['#1','#2','#3','#4','#5','#6','#7','#8'];
+  const max = Math.max(...scores);
+  const barsEl = document.getElementById('chartBars');
+  const lblsEl = document.getElementById('chartLabels');
+  if (!barsEl) return;
+  scores.forEach((s, i) => {
+    const pct = Math.round((s / max) * 100);
+    const isMax = s === max;
+    barsEl.innerHTML += `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:10px;color:${isMax?'var(--gold)':'var(--muted)'};font-weight:${isMax?700:400}">${s}</div>
+        <div style="width:100%;border-radius:4px 4px 0 0;background:${isMax?'var(--gold)':'var(--bg4)'};height:${pct}px;transition:height 0.8s ${i*0.08}s;min-height:4px"></div>
+      </div>`;
+    lblsEl.innerHTML += `<div style="flex:1;text-align:center;font-size:10px;color:var(--muted2)">${labels[i]}</div>`;
+  });
+}
 
-                // Ostatní odkazy scrollují
-                if (this.getAttribute('href').startsWith('#')) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                }
-            });
-        });
+// tab switching
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  document.getElementById('page-' + tab).classList.add('active');
+  if (tab === 'zebricek') setTimeout(animateBars, 200);
+  if (tab === 'profil') setTimeout(buildChart, 100);
+}
 
-        // 2. Toggler pro Mobilní Menu
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const menuButton = document.querySelector('button[aria-controls="mobile-menu"]'); 
+// reactions
+function toggleLike(btn, id) {
+  const cnt = btn.querySelector('.like-count');
+  const liked = btn.classList.toggle('liked');
+  cnt.textContent = parseInt(cnt.textContent) + (liked ? 1 : -1);
+  if (liked) showToast('🎳','Ocenil/a jsi příspěvek!');
+}
 
-            const isOpen = menu.classList.toggle('open');
-            
-            // Zamezit scrollování pozadí při otevřeném menu
-            document.body.style.overflow = isOpen ? 'hidden' : '';
-            
-            // Aktualizace A11y atributu aria-expanded
-            if (menuButton) {
-                menuButton.setAttribute('aria-expanded', isOpen);
-            }
-        }
+// comments
+function toggleComment(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
 
-        // 3. Vlastní Modal (Místo alert())
-        function showCustomModal(title, message) {
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-message').textContent = message;
-            document.getElementById('custom-modal').style.display = 'flex'; // Zobrazit modal
-        }
-    </script>
+function sendComment(sectionId, inputId) {
+  const input = document.getElementById(inputId);
+  const text = input.value.trim();
+  if (!text) return;
+  const section = document.getElementById(sectionId);
+  const inputRow = section.querySelector('.comment-input-row');
+  const comment = document.createElement('div');
+  comment.className = 'comment';
+  comment.innerHTML = `
+    <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800)">MN</div>
+    <div class="comment-bubble">
+      <div class="comment-author">Marek Novák</div>
+      <div class="comment-text">${text}</div>
+    </div>`;
+  section.insertBefore(comment, inputRow);
+  input.value = '';
+  showToast('💬','Komentář přidán!');
+}
 
+// composer
+function publishPost() {
+  const text = document.getElementById('composerText').value.trim();
+  if (!text) { showToast('⚠️','Nejdřív něco napiš!'); return; }
+  const feed = document.getElementById('feedContainer');
+  const post = document.createElement('div');
+  post.className = 'post';
+  const now = 'právě teď';
+  const rid = 'rc' + Date.now();
+  const cid = 'cc' + Date.now();
+  post.innerHTML = `
+    <div class="post-header">
+      <div class="post-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800)">MN</div>
+      <div class="post-meta">
+        <div class="post-name">Marek Novák</div>
+        <div class="post-time">${now}</div>
+      </div>
+      <button class="post-more">···</button>
+    </div>
+    <div class="post-body"><div class="post-text">${text}</div></div>
+    <div class="post-footer">
+      <button class="reaction-btn" onclick="toggleLike(this,'${rid}')">
+        <span class="reaction-icon">🎳</span><span class="like-count">0</span>
+      </button>
+      <button class="reaction-btn" onclick="toggleComment('${cid}')">
+        <span class="reaction-icon">💬</span><span>0</span>
+      </button>
+      <div class="spacer"></div>
+      <button class="reaction-btn" onclick="showToast('📤','Link zkopírován!')">
+        <span class="reaction-icon">↗</span> Sdílet
+      </button>
+    </div>
+    <div class="comments-section" id="${cid}">
+      <div class="comment-input-row">
+        <div class="comment-avatar" style="background:linear-gradient(135deg,#f0a500,#e07800);width:30px;height:30px;font-size:11px">MN</div>
+        <input class="comment-input" placeholder="Napiš komentář…" id="ci${rid}" onkeydown="if(event.key==='Enter')sendComment('${cid}','ci${rid}')">
+        <button class="comment-submit" onclick="sendComment('${cid}','ci${rid}')">➤</button>
+      </div>
+    </div>`;
+  feed.insertBefore(post, feed.firstChild);
+  document.getElementById('composerText').value = '';
+  document.getElementById('composerText').style.height = 'auto';
+  showToast('✅','Příspěvek zveřejněn!');
+}
+
+// events
+function toggleGoing(btn) {
+  const joined = btn.classList.toggle('joined');
+  btn.textContent = joined ? '✓ Jdu' : 'Přihlásit se';
+  showToast(joined ? '✅' : '↩️', joined ? 'Přihlášen/a na akci!' : 'Odhlášen/a z akce');
+}
+
+// toast
+let toastTimer;
+function showToast(icon, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-text').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// init
+buildLeaderboard();
+buildMembers();
+</script>
 </body>
 </html>
